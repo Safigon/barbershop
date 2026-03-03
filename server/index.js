@@ -121,7 +121,32 @@ async function initDB() {
       ('about', 'BLADE & STYLE — premium барбершоп в сердце города. Мы создаём не просто стрижки — мы создаём образ.');
     `);
   }
-
+// CRM миграция
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS crm_users (
+    id SERIAL PRIMARY KEY,
+    login VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'master',
+    master_id INTEGER REFERENCES masters(id) ON DELETE SET NULL,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+  CREATE TABLE IF NOT EXISTS mailing_log (
+    id SERIAL PRIMARY KEY,
+    subject VARCHAR(255),
+    body TEXT,
+    segment VARCHAR(50),
+    recipients_count INTEGER DEFAULT 0,
+    sent_at TIMESTAMP DEFAULT NOW()
+  );
+  ALTER TABLE appointments ADD COLUMN IF NOT EXISTS source VARCHAR(20) DEFAULT 'online';
+  ALTER TABLE appointments ADD COLUMN IF NOT EXISTS notes TEXT;
+  INSERT INTO crm_users (login, password_hash, name, role)
+  VALUES ('admin', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', 'Администратор', 'admin')
+  ON CONFLICT (login) DO NOTHING;
+`);
   console.log('✅ DB initialized');
 }
 
