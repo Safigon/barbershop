@@ -30,9 +30,8 @@ export default function Layout() {
       <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
         <div className="container navbar__inner">
           <Link to="/" className="navbar__logo">
-            <span className="navbar__logo-main">BLADE</span>
-            <span className="navbar__logo-amp">&</span>
-            <span className="navbar__logo-sub">STYLE</span>
+            <span className="navbar__logo-main">BARBER</span>
+            <span className="navbar__logo-sub">TOK</span>
           </Link>
 
           <nav className={`navbar__nav ${menuOpen ? 'navbar__nav--open' : ''}`}>
@@ -82,9 +81,8 @@ export default function Layout() {
       <footer className="footer">
         <div className="container footer__inner">
           <div className="footer__logo">
-            <span className="navbar__logo-main">BLADE</span>
-            <span className="navbar__logo-amp"> & </span>
-            <span className="navbar__logo-sub">STYLE</span>
+            <span className="navbar__logo-main">BARBER</span>
+            <span className="navbar__logo-sub">TOK</span>
           </div>
           <p className="footer__tagline serif" style={{ fontStyle: 'italic', color: 'var(--text3)', marginTop: 8 }}>
             Мужской стиль. Без компромиссов.
@@ -95,7 +93,7 @@ export default function Layout() {
             ))}
           </div>
           <div className="footer__bottom">
-            <span>© {new Date().getFullYear()} BLADE & STYLE</span>
+            <span>© {new Date().getFullYear()} BARBERTOK</span>
             <span>Все права защищены</span>
           </div>
         </div>
