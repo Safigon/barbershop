@@ -1,13 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getSettings } from '../utils/api';
 import './ContactsPage.css';
 
 export default function ContactsPage() {
   const [settings, setSettings] = useState({});
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
 
   useEffect(() => {
     getSettings().then(setSettings).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const address = settings.address || 'г. Уфа, Проспект Октября, 127';
+
+    const initMap = () => {
+      if (!window.ymaps || !mapRef.current || mapInstanceRef.current) return;
+
+      window.ymaps.ready(() => {
+        window.ymaps.geocode(address).then(res => {
+          const coords = res.geoObjects.get(0).geometry.getCoordinates();
+
+          mapInstanceRef.current = new window.ymaps.Map(mapRef.current, {
+            center: coords,
+            zoom: 16,
+            controls: ['zoomControl'],
+          });
+
+          const placemark = new window.ymaps.Placemark(coords, {
+            balloonContent: address,
+          }, {
+            preset: 'islands#darkOrangeIcon',
+          });
+
+          mapInstanceRef.current.geoObjects.add(placemark);
+        });
+      });
+    };
+
+    if (window.ymaps) {
+      initMap();
+    } else {
+      const script = document.createElement('script');
+      script.src = `https://api-maps.yandex.ru/2.1/?apikey=91fa8288-c508-4040-8a91-efd52ae3c52f&lang=ru_RU`;
+      script.async = true;
+      script.onload = initMap;
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.destroy();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [settings.address]);
 
   return (
     <div className="contacts-page">
@@ -23,7 +70,7 @@ export default function ContactsPage() {
           <div className="contacts__info">
             <div className="contacts__block">
               <div className="section-label" style={{ marginBottom: 12 }}>Адрес</div>
-              <p className="contacts__value">{settings.address || 'г. Москва, ул. Барберская, 15'}</p>
+              <p className="contacts__value">{settings.address || 'г. Уфа, Проспект Октября, 127'}</p>
             </div>
             <div className="gold-line" />
 
@@ -70,15 +117,10 @@ export default function ContactsPage() {
           </div>
 
           <div className="contacts__map">
-            <div className="contacts__map-placeholder">
-              <div className="contacts__map-pin">📍</div>
-              <p style={{ color: 'var(--text2)', marginTop: 12 }}>
-                {settings.address || 'г. Москва, ул. Барберская, 15'}
-              </p>
-              <p style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>
-                Карта подключается через API Яндекс.Карт / Google Maps
-              </p>
-            </div>
+            <div
+              ref={mapRef}
+              style={{ width: '100%', minHeight: 400, border: '1px solid var(--border2)' }}
+            />
           </div>
         </div>
       </div>
