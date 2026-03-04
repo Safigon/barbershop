@@ -155,10 +155,15 @@ router.post('/appointments', auth, adminOnly, async (req, res) => {
       clientId = ins.rows[0].id;
     }
 
+    // Автостатус: если дата/время прошедшие или текущие — сразу "done", иначе "confirmed"
+    const appointmentDT = new Date(`${date}T${time}:00`);
+    const now = new Date();
+    const autoStatus = appointmentDT <= now ? 'done' : 'confirmed';
+
     const { rows } = await pool.query(
       `INSERT INTO appointments(client_id, master_id, service_id, appointment_date, appointment_time, status, notes, source)
-       VALUES($1,$2,$3,$4,$5,'confirmed',$6,'manual') RETURNING id`,
-      [clientId, master_id, service_id, date, time, notes || null]
+       VALUES($1,$2,$3,$4,$5,$6,$7,'manual') RETURNING id`,
+      [clientId, master_id, service_id, date, time, autoStatus, notes || null]
     );
     res.json({ appointment_id: rows[0].id });
   } catch (e) {
@@ -473,3 +478,32 @@ router.get('/mailing/logs', auth, adminOnly, async (req, res) => {
 });
 
 module.exports = router;
+
+// ─── CRON: ночное обновление статусов ────────────────────────
+function startNightlyCron(pool) {
+  function msUntilMidnight() {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    return midnight - now;
+  }
+
+  async function runNoShow() {
+    try {
+      const result = await pool.query(`
+        UPDATE appointments
+        SET status = 'no_show'
+        WHERE status = 'confirmed'
+          AND appointment_date < CURRENT_DATE
+      `);
+      console.log('No-show cron: обновлено ' + result.rowCount + ' записей');
+    } catch (e) {
+      console.error('Cron error:', e.message);
+    }
+    setTimeout(runNoShow, 24 * 60 * 60 * 1000);
+  }
+
+  setTimeout(runNoShow, msUntilMidnight());
+}
+
+module.exports.startNightlyCron = startNightlyCron;

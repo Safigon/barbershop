@@ -3,6 +3,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 require('dotenv').config();
 const crmRouter = require('./crm');
+const { startNightlyCron } = require('./crm');
 
 const app = express();
 app.use(cors({
@@ -155,7 +156,7 @@ await pool.query(`
 initDB().catch(console.error);
 app.locals.pool = pool;
 app.use('/crm', crmRouter);
-
+startNightlyCron(pool);
 // ─── ROUTES ──────────────────────────────────────────────────────────────────
 
 // GET /api/masters
