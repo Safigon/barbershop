@@ -85,9 +85,11 @@ export default function HomePage() {
         <div className="container about__inner">
           <div className="about__visual">
             <div className="about__img-frame">
-              <div className="about__img-placeholder">
-                <span>✂</span>
-              </div>
+              <img
+                src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=680&q=80"
+                alt="Barbershop"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }}
+              />
               <div className="about__img-border" />
             </div>
           </div>
