@@ -119,8 +119,8 @@ async function initDB() {
       ('address', 'г. Уфа, Проспект Октября, 127'),
       ('open_from', '10:00'),
       ('open_to', '21:00'),
-      ('instagram', '@blade_style'),
-      ('about', 'BLADE & STYLE — premium барбершоп в сердце города. Мы создаём не просто стрижки — мы создаём образ.');
+      ('instagram', '@barber_tok'),
+      ('about', 'BARBERTOK — premium барбершоп в сердце города. Мы создаём не просто стрижки — мы создаём образ.');
     `);
   }
 // CRM миграция
