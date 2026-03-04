@@ -114,9 +114,9 @@ async function initDB() {
 
     await pool.query(`
       INSERT INTO salon_settings (key, value) VALUES
-      ('salon_name', 'BLADE & STYLE'),
+      ('salon_name', 'BARBERTOK'),
       ('phone', '+7 (999) 123-45-67'),
-      ('address', 'г. Москва, ул. Барберская, 15'),
+      ('address', 'г. Уфа, Проспект Октября, 127'),
       ('open_from', '10:00'),
       ('open_to', '21:00'),
       ('instagram', '@blade_style'),

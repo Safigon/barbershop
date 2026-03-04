@@ -39,9 +39,8 @@ export default function HomePage() {
           <div className={`hero__text ${visible ? 'hero__text--visible' : ''}`}>
             <div className="section-label">Барбершоп премиум-класса</div>
             <h1 className="hero__title">
-              <span className="hero__title-line">BLADE</span>
-              <span className="hero__title-line hero__title-line--gold">&amp;</span>
-              <span className="hero__title-line">STYLE</span>
+              <span className="hero__title-line">BARBER</span>
+              <span className="hero__title-line hero__title-line--gold">TOK</span>
             </h1>
             <p className="hero__subtitle serif">
               Мужской стиль — это не случайность.<br />
@@ -58,7 +57,7 @@ export default function HomePage() {
               <span className="hero__badge-top">PREMIUM</span>
               <span className="hero__badge-main">BARBERSHOP</span>
               <div className="hero__badge-divider" />
-              <span className="hero__badge-bottom">МОСКВА</span>
+              <span className="hero__badge-bottom">УФА</span>
             </div>
           </div>
         </div>
@@ -97,7 +96,7 @@ export default function HomePage() {
             <h2 className="section-title">МЫ<br />ЗНАЕМ<br />СТИЛЬ</h2>
             <div className="gold-line" />
             <p style={{ color: 'var(--text2)', marginBottom: 16 }}>
-              BLADE & STYLE — это не просто парикмахерская. Это место, где мужской образ
+              BARBERTOK — это не просто парикмахерская. Это место, где мужской образ
               выстраивается с нуля: от формы стрижки до завершающей укладки.
             </p>
             <p style={{ color: 'var(--text2)', marginBottom: 32 }}>
