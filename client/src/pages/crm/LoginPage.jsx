@@ -43,7 +43,7 @@ export default function LoginPage() {
             fontSize: 28, letterSpacing: 3,
             color: '#f0f0f0',
           }}>
-            BLADE <span style={{ color: '#c9a84c' }}>CRM</span>
+            BBT <span style={{ color: '#c9a84c' }}>CRM</span>
           </div>
           <div style={{ fontSize: 13, color: '#606060', marginTop: 4 }}>Административная панель</div>
         </div>

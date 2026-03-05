@@ -35,7 +35,7 @@ export default function CRMLayout() {
       <aside className={`crm-sidebar ${sidebarOpen ? 'crm-sidebar--open' : ''}`}>
         <div className="crm-sidebar__logo">
           <span className="crm-sidebar__logo-icon">✂</span>
-          <span className="crm-sidebar__logo-text">BLADE <span>CRM</span></span>
+          <span className="crm-sidebar__logo-text">BBT <span>CRM</span></span>
         </div>
 
         <nav className="crm-nav">
@@ -77,7 +77,7 @@ export default function CRMLayout() {
       <main className="crm-main">
         <header className="crm-header">
           <button className="crm-header__burger" onClick={() => setSidebarOpen(true)}>☰</button>
-          <div className="crm-header__title">Barbershop CRM</div>
+          <div className="crm-header__title">BBT CRM</div>
           <div className="crm-header__user">
             {user?.name} · {user?.role === 'admin' ? 'Администратор' : 'Мастер'}
           </div>
