@@ -486,7 +486,7 @@ function startNightlyCron(pool) {
       const result = await pool.query(`
         UPDATE appointments
         SET status = 'no_show'
-        WHERE status = 'new'
+        WHERE status IN ('new', 'confirmed')
           AND (appointment_date + appointment_time + interval '3 hours') < NOW()
       `);
       console.log('No-show cron: обновлено ' + result.rowCount + ' записей');
