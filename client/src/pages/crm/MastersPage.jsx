@@ -1,3 +1,4 @@
+import ScheduleModal from './ScheduleModal';
 import React, { useEffect, useState } from 'react';
 import { crmApi } from '../../utils/crmApi';
 
@@ -10,6 +11,8 @@ export default function MastersPage() {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [scheduleModal, setScheduleModal] = useState(null);
+
 
   function load() {
     setLoading(true);
@@ -83,6 +86,7 @@ export default function MastersPage() {
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button className="crm-btn crm-btn--outline crm-btn--sm" onClick={() => openEdit(m)}>Изменить</button>
+                      <button className="crm-btn crm-btn--outline crm-btn--sm" onClick={() => setScheduleModal(m)}>📅 Расписание</button>
                       <button className="crm-btn crm-btn--outline crm-btn--sm" onClick={() => toggleActive(m)}>
                         {m.active ? 'Деактивировать' : 'Активировать'}
                       </button>
@@ -141,6 +145,8 @@ export default function MastersPage() {
           </div>
         </div>
       )}
+      {scheduleModal && <ScheduleModal master={scheduleModal} onClose={() => setScheduleModal(null)} />}
+
     </div>
   );
 }

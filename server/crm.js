@@ -320,6 +320,84 @@ router.patch('/masters/:id', auth, adminOnly, async (req, res) => {
   }
 });
 
+// ─── SCHEDULE ────────────────────────────────────────────────
+// GET /crm/masters/:id/schedule
+router.get('/masters/:id/schedule', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM master_schedule WHERE master_id=$1 ORDER BY day_of_week',
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// POST /crm/masters/:id/schedule — сохранить всё расписание
+router.post('/masters/:id/schedule', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { schedule } = req.body;
+  try {
+    // Удаляем старое и вставляем новое
+    await pool.query('DELETE FROM master_schedule WHERE master_id=$1', [req.params.id]);
+    for (const day of schedule) {
+      await pool.query(
+        `INSERT INTO master_schedule(master_id, day_of_week, is_working, time_from, time_to)
+         VALUES($1,$2,$3,$4,$5)`,
+        [req.params.id, day.day_of_week, day.is_working, day.time_from, day.time_to]
+      );
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// GET /crm/masters/:id/days-off
+router.get('/masters/:id/days-off', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM master_days_off WHERE master_id=$1 ORDER BY date',
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// POST /crm/masters/:id/days-off
+router.post('/masters/:id/days-off', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { date, reason } = req.body;
+  try {
+    const { rows } = await pool.query(
+      'INSERT INTO master_days_off(master_id, date, reason) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING *',
+      [req.params.id, date, reason || null]
+    );
+    res.json(rows[0] || {});
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// DELETE /crm/masters/:id/days-off/:dayOffId
+router.delete('/masters/:id/days-off/:dayOffId', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  try {
+    await pool.query(
+      'DELETE FROM master_days_off WHERE id=$1 AND master_id=$2',
+      [req.params.dayOffId, req.params.id]
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── SERVICES (управление) ───────────────────────────────────
 // GET /crm/services
 router.get('/services', auth, adminOnly, async (req, res) => {

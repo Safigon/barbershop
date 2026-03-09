@@ -55,4 +55,10 @@ export const crmApi = {
 
   sendMailing: (data) => request('POST', '/mailing/send', data),
   getMailingLogs: () => request('GET', '/mailing/logs'),
+
+  getSchedule: (masterId) => request('GET', `/masters/${masterId}/schedule`),
+  saveSchedule: (masterId, data) => request('POST', `/masters/${masterId}/schedule`, data),
+  getDaysOff: (masterId) => request('GET', `/masters/${masterId}/days-off`),
+  addDayOff: (masterId, data) => request('POST', `/masters/${masterId}/days-off`, data),
+  deleteDayOff: (masterId, dayOffId) => request('DELETE', `/masters/${masterId}/days-off/${dayOffId}`),
 };
