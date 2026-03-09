@@ -481,29 +481,25 @@ module.exports = router;
 
 // ─── CRON: ночное обновление статусов ────────────────────────
 function startNightlyCron(pool) {
-  function msUntilMidnight() {
-    const now = new Date();
-    const midnight = new Date(now);
-    midnight.setHours(24, 0, 0, 0);
-    return midnight - now;
-  }
-
   async function runNoShow() {
     try {
       const result = await pool.query(`
         UPDATE appointments
         SET status = 'no_show'
-        WHERE status = 'confirmed'
-          AND appointment_date < CURRENT_DATE
+        WHERE status = 'new'
+          AND (appointment_date + appointment_time + interval '3 hours') < NOW()
       `);
       console.log('No-show cron: обновлено ' + result.rowCount + ' записей');
     } catch (e) {
       console.error('Cron error:', e.message);
     }
-    setTimeout(runNoShow, 24 * 60 * 60 * 1000);
+    // запускаем каждые 15 минут
+    setTimeout(runNoShow, 15 * 60 * 1000);
   }
 
-  setTimeout(runNoShow, msUntilMidnight());
+  // первый запуск через 1 минуту после старта
+  setTimeout(runNoShow, 60 * 1000);
+  console.log('No-show cron запущен, интервал 15 мин');
 }
 
 module.exports.startNightlyCron = startNightlyCron;
