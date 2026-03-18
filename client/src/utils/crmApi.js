@@ -61,4 +61,5 @@ export const crmApi = {
   getDaysOff: (masterId) => request('GET', `/masters/${masterId}/days-off`),
   addDayOff: (masterId, data) => request('POST', `/masters/${masterId}/days-off`, data),
   deleteDayOff: (masterId, dayOffId) => request('DELETE', `/masters/${masterId}/days-off/${dayOffId}`),
+  getFullSchedule: (from, to) => request('GET', `/schedule?from=${from}&to=${to}`),
 };
