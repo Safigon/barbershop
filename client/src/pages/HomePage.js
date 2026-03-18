@@ -62,10 +62,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="hero__scroll">
-          <span>SCROLL</span>
-          <div className="hero__scroll-line" />
-        </div>
       </section>
 
       {/* STATS */}

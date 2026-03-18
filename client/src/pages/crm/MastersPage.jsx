@@ -1,7 +1,8 @@
+import ScheduleModal from './ScheduleModal';
 import React, { useEffect, useState } from 'react';
 import { crmApi } from '../../utils/crmApi';
 
-const emptyForm = { name: '', specialty: '', bio: '', photo_url: '', work_schedule: '5/2', active: true };
+const emptyForm = { name: '', specialty: '', description: '', photo_url: '', work_schedule: '5/2', active: true };
 
 export default function MastersPage() {
   const [masters, setMasters] = useState([]);
@@ -10,6 +11,8 @@ export default function MastersPage() {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [scheduleModal, setScheduleModal] = useState(null);
+
 
   function load() {
     setLoading(true);
@@ -83,6 +86,7 @@ export default function MastersPage() {
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button className="crm-btn crm-btn--outline crm-btn--sm" onClick={() => openEdit(m)}>Изменить</button>
+                      <button className="crm-btn crm-btn--outline crm-btn--sm" onClick={() => setScheduleModal(m)}>📅 Расписание</button>
                       <button className="crm-btn crm-btn--outline crm-btn--sm" onClick={() => toggleActive(m)}>
                         {m.active ? 'Деактивировать' : 'Активировать'}
                       </button>
@@ -113,7 +117,7 @@ export default function MastersPage() {
             </div>
             <div className="crm-form-group">
               <label className="crm-form-label">О мастере (для сайта)</label>
-              <textarea className="crm-form-textarea" value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))} />
+              <textarea className="crm-form-textarea" value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
             <div className="crm-form-group">
               <label className="crm-form-label">URL фотографии</label>
@@ -141,6 +145,8 @@ export default function MastersPage() {
           </div>
         </div>
       )}
+      {scheduleModal && <ScheduleModal master={scheduleModal} onClose={() => setScheduleModal(null)} />}
+
     </div>
   );
 }

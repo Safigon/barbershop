@@ -320,41 +320,79 @@ router.patch('/masters/:id', auth, adminOnly, async (req, res) => {
   }
 });
 
-// ─── SCHEDULE ───
-// GET /crm/schedule?from=2026-03-01&to=2026-03-31
-router.get('/schedule', auth, async (req, res) => {
+// ─── SCHEDULE ────────────────────────────────────────────────
+// GET /crm/masters/:id/schedule
+router.get('/masters/:id/schedule', auth, adminOnly, async (req, res) => {
   const pool = req.app.locals.pool;
-  const { from, to } = req.query;
   try {
-    // Все мастера
-    const masters = await pool.query('SELECT id, name, specialty FROM masters WHERE active=true');
-    
-    // Расписание (дни недели)
-    const schedule = await pool.query('SELECT * FROM master_schedule');
-    
-    // Выходные даты в диапазоне
-    const daysOff = await pool.query(
-      'SELECT * FROM master_days_off WHERE date BETWEEN $1 AND $2',
-      [from, to]
+    const { rows } = await pool.query(
+      'SELECT * FROM master_schedule WHERE master_id=$1 ORDER BY day_of_week',
+      [req.params.id]
     );
-    
-    // Записи клиентов в диапазоне
-    const appointments = await pool.query(
-      `SELECT a.*, m.name as master_name 
-       FROM appointments a
-       JOIN masters m ON a.master_id = m.id
-       WHERE a.appointment_date BETWEEN $1 AND $2
-       AND a.status NOT IN ('cancelled')
-       ORDER BY a.appointment_date, a.appointment_time`,
-      [from, to]
-    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
-    res.json({
-      masters: masters.rows,
-      schedule: schedule.rows,
-      daysOff: daysOff.rows,
-      appointments: appointments.rows,
-    });
+// POST /crm/masters/:id/schedule — сохранить всё расписание
+router.post('/masters/:id/schedule', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { schedule } = req.body;
+  try {
+    // Удаляем старое и вставляем новое
+    await pool.query('DELETE FROM master_schedule WHERE master_id=$1', [req.params.id]);
+    for (const day of schedule) {
+      await pool.query(
+        `INSERT INTO master_schedule(master_id, day_of_week, is_working, time_from, time_to)
+         VALUES($1,$2,$3,$4,$5)`,
+        [req.params.id, day.day_of_week, day.is_working, day.time_from, day.time_to]
+      );
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// GET /crm/masters/:id/days-off
+router.get('/masters/:id/days-off', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM master_days_off WHERE master_id=$1 ORDER BY date',
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// POST /crm/masters/:id/days-off
+router.post('/masters/:id/days-off', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { date, reason } = req.body;
+  try {
+    const { rows } = await pool.query(
+      'INSERT INTO master_days_off(master_id, date, reason) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING *',
+      [req.params.id, date, reason || null]
+    );
+    res.json(rows[0] || {});
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// DELETE /crm/masters/:id/days-off/:dayOffId
+router.delete('/masters/:id/days-off/:dayOffId', auth, adminOnly, async (req, res) => {
+  const pool = req.app.locals.pool;
+  try {
+    await pool.query(
+      'DELETE FROM master_days_off WHERE id=$1 AND master_id=$2',
+      [req.params.dayOffId, req.params.id]
+    );
+    res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
