@@ -320,6 +320,46 @@ router.patch('/masters/:id', auth, adminOnly, async (req, res) => {
   }
 });
 
+// ─── SCHEDULE ───
+// GET /crm/schedule?from=2026-03-01&to=2026-03-31
+router.get('/schedule', auth, async (req, res) => {
+  const pool = req.app.locals.pool;
+  const { from, to } = req.query;
+  try {
+    // Все мастера
+    const masters = await pool.query('SELECT id, name, specialty FROM masters WHERE active=true');
+    
+    // Расписание (дни недели)
+    const schedule = await pool.query('SELECT * FROM master_schedule');
+    
+    // Выходные даты в диапазоне
+    const daysOff = await pool.query(
+      'SELECT * FROM master_days_off WHERE date BETWEEN $1 AND $2',
+      [from, to]
+    );
+    
+    // Записи клиентов в диапазоне
+    const appointments = await pool.query(
+      `SELECT a.*, m.name as master_name 
+       FROM appointments a
+       JOIN masters m ON a.master_id = m.id
+       WHERE a.appointment_date BETWEEN $1 AND $2
+       AND a.status NOT IN ('cancelled')
+       ORDER BY a.appointment_date, a.appointment_time`,
+      [from, to]
+    );
+
+    res.json({
+      masters: masters.rows,
+      schedule: schedule.rows,
+      daysOff: daysOff.rows,
+      appointments: appointments.rows,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── SERVICES (управление) ───────────────────────────────────
 // GET /crm/services
 router.get('/services', auth, adminOnly, async (req, res) => {

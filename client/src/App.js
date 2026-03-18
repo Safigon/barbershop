@@ -22,6 +22,8 @@ import UsersPage from './pages/crm/UsersPage';
 import MailingPage from './pages/crm/MailingPage';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './components/crm/AuthContext';
+import SchedulePage from './pages/crm/SchedulePage';
+
 
 function PrivateRoute({ children, adminOnly }) {
   const { token, user } = useAuth();
@@ -56,6 +58,7 @@ function App() {
             <Route path="services" element={<PrivateRoute adminOnly><ServicesPage /></PrivateRoute>} />
             <Route path="users" element={<PrivateRoute adminOnly><UsersPage /></PrivateRoute>} />
             <Route path="mailing" element={<PrivateRoute adminOnly><MailingPage /></PrivateRoute>} />
+            <Route path="schedule" element={<SchedulePage />} />
           </Route>
         </Routes>
       </Router>

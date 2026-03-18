@@ -8,6 +8,7 @@ const adminMenu = [
   { path: '/crm/calendar', icon: '📅', label: 'Календарь' },
   { path: '/crm/clients', icon: '👥', label: 'Клиенты' },
   { path: '/crm/masters', icon: '✂️', label: 'Мастера' },
+  { path: '/crm/schedule', icon: '🗓️', label: 'Расписание' },
   { path: '/crm/services', icon: '💈', label: 'Услуги' },
   { path: '/crm/users', icon: '🔑', label: 'Сотрудники' },
   { path: '/crm/mailing', icon: '📧', label: 'Рассылки' },
@@ -15,6 +16,7 @@ const adminMenu = [
 
 const masterMenu = [
   { path: '/crm/calendar', icon: '📅', label: 'Мои записи' },
+  { path: '/crm/schedule', icon: '🗓️', label: 'Расписание' },
 ];
 
 export default function CRMLayout() {
